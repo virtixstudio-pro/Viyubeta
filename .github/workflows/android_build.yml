@@ -14,11 +14,6 @@ jobs:
           java-version: '11'
           distribution: 'temurin'
 
-      - name: Decode google-services.json
-        env:
-          GSERV: ${{ secrets.GOOGLE_SERVICES_JSON }}
-        run: echo "$GSERV" | base64 -d > app/google-services.json
-
       - name: Build with Gradle
         run: ./gradlew assembleDebug
 

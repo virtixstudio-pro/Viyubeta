@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_滿足"
+    android:layout_height="match_parent"
+    android:background="#0A0A0A">
+
+    <!-- Le logo V (on utilise un gros texte stylisé pour l'instant) -->
+    <TextView
+        android:id="@+id/tv_splash_logo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="V"
+        android:textColor="#FFFFFF"
+        android:textSize="90sp"
+        android:textStyle="bold"
+        android:layout_centerInParent="true" />
+
+    <!-- Copyright tout en bas -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="© Copyright by Virtix Studio"
+        android:textColor="#666666"
+        android:textSize="12sp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="24dp" />
+
+</RelativeLayout>

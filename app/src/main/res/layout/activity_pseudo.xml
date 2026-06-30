@@ -10,54 +10,41 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Viyu"
+        android:text="Choisis ton pseudo"
         android:textColor="#FFFFFF"
-        android:textSize="36sp"
+        android:textSize="24sp"
         android:textStyle="bold"
-        android:layout_marginBottom="40dp"/>
+        android:layout_marginBottom="8dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="C'est le nom que tes contacts verront."
+        android:textColor="#888888"
+        android:textSize="14sp"
+        android:layout_marginBottom="32dp"
+        android:gravity="center"/>
 
     <EditText
-        android:id="@+id/et_login_email"
+        android:id="@+id/et_pseudo"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:background="@drawable/bg_input_rounded"
-        android:hint="Email"
+        android:hint="Ex: Perse"
         android:textColorHint="#888888"
         android:textColor="#FFFFFF"
         android:paddingHorizontal="20dp"
-        android:inputType="textEmailAddress"
-        android:layout_marginBottom="16dp"/>
-
-    <EditText
-        android:id="@+id/et_login_password"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:background="@drawable/bg_input_rounded"
-        android:hint="Mot de passe"
-        android:textColorHint="#888888"
-        android:textColor="#FFFFFF"
-        android:paddingHorizontal="20dp"
-        android:inputType="textPassword"
+        android:inputType="textPersonName"
         android:layout_marginBottom="24dp"/>
 
     <Button
-        android:id="@+id/btn_login_submit"
+        android:id="@+id/btn_save_pseudo"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:background="@drawable/bg_button_rounded"
-        android:text="Se connecter"
+        android:text="Continuer"
         android:textColor="#0A0A0A"
         android:textStyle="bold"
         android:textAllCaps="false"/>
-
-    <TextView
-        android:id="@+id/tv_go_to_register"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Pas encore de compte ? S'inscrire"
-        android:textColor="#888888"
-        android:textSize="12sp"
-        android:layout_marginTop="20dp"
-        android:padding="8dp"/>
 
 </LinearLayout>

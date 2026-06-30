@@ -25,18 +25,35 @@
         android:layout_marginBottom="24dp"
         android:gravity="center"/>
 
-    <EditText
-        android:id="@+id/et_pseudo"
+    <!-- Zone de Saisie avec statut à droite -->
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:background="@drawable/bg_input_rounded"
-        android:hint="@pseudo"
-        android:textColorHint="#555555"
-        android:textColor="#FFFFFF"
-        android:paddingStart="16dp"
-        android:layout_marginBottom="16dp"
-        android:inputType="text"
-        android:text="@"/>
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp">
+
+        <EditText
+            android:id="@+id/et_pseudo"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/bg_input_rounded"
+            android:hint="@pseudo"
+            android:textColorHint="#555555"
+            android:textColor="#FFFFFF"
+            android:paddingStart="16dp"
+            android:paddingEnd="50dp"
+            android:inputType="text"
+            android:text="@"/>
+
+        <TextView
+            android:id="@+id/tv_pseudo_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="16dp"
+            android:text="❌"
+            android:textSize="18sp"/>
+    </RelativeLayout>
 
     <Button
         android:id="@+id/btn_valider_pseudo"
@@ -47,5 +64,12 @@
         android:textColor="#0A0A0A"
         android:textStyle="bold"
         android:textAllCaps="false"/>
+
+    <ProgressBar
+        android:id="@+id/pb_pseudo_loading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:visibility="gone"/>
 
 </LinearLayout>

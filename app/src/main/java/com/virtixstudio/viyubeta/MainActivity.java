@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -31,14 +32,15 @@ public class MainActivity extends AppCompatActivity {
     private ChatAdapter adapter;
     private List<ChatModel> chatList;
     private DatabaseReference databaseReference;
-    
-    // Identifiant de l'utilisateur actuel
-    private final String MY_NAME = "Moi"; 
+    private final String MY_NAME = "Moi";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // Initialisation explicite de Firebase avec le contexte
+        FirebaseApp.initializeApp(this);
 
         rvChats = findViewById(R.id.rv_chats);
         etMessage = findViewById(R.id.et_message);
@@ -52,9 +54,8 @@ public class MainActivity extends AppCompatActivity {
         adapter = new ChatAdapter(chatList, MY_NAME);
         rvChats.setAdapter(adapter);
 
-        databaseReference = FirebaseDatabase.getInstance("VRAIE_URL_DE_TA_BASE_ICI").getReference("chats");
-        
-        // Maintient la synchronisation des données en cache
+        // Instance sécurisée avec l'URL Europe-West1
+        databaseReference = FirebaseDatabase.getInstance("https://viyu-message-default-rtdb.europe-west1.firebasedatabase.app/").getReference("chats");
         databaseReference.keepSynced(true);
 
         btnSend.setOnClickListener(v -> {
@@ -63,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
                 String currentTime = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
                 ChatModel newMessage = new ChatModel(MY_NAME, msgText, currentTime);
                 databaseReference.push().setValue(newMessage);
-                etMessage.setText(""); 
+                etMessage.setText("");
             }
         });
 
@@ -82,6 +83,7 @@ public class MainActivity extends AppCompatActivity {
                     rvChats.scrollToPosition(chatList.size() - 1);
                 }
             }
+
             @Override
             public void onCancelled(@NonNull DatabaseError error) {}
         });
@@ -93,7 +95,6 @@ public class MainActivity extends AppCompatActivity {
         private String time;
 
         public ChatModel() {}
-
         public ChatModel(String name, String message, String time) {
             this.name = name;
             this.message = message;
@@ -108,7 +109,6 @@ public class MainActivity extends AppCompatActivity {
     public static class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         private final List<ChatModel> list;
         private final String myName;
-        
         private static final int VIEW_TYPE_SENT = 1;
         private static final int VIEW_TYPE_RECEIVED = 2;
 

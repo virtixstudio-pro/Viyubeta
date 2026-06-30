@@ -3,84 +3,81 @@ package com.virtixstudio.viyubeta;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
+import androidx.appcompat.widget.PopupMenu;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
     private ListView lvContacts;
+    private FloatingActionButton fabAddContact;
+    private ImageView ivMenuMore;
     private ArrayList<String> contactNames;
-    private ArrayList<String> contactUIDs;
     private ArrayAdapter<String> adapter;
-    private DatabaseReference usersRef;
-    private String currentUid;
+    private FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        FirebaseAuth auth = FirebaseAuth.getInstance();
-        if (auth.getCurrentUser() == null) {
-            startActivity(new Intent(this, LoginActivity.class));
-            finish();
+        mAuth = FirebaseAuth.getInstance();
+        if (mAuth.getCurrentUser() == null) {
+            retourConnexion();
             return;
         }
 
-        currentUid = auth.getCurrentUser().getUid();
-        usersRef = FirebaseDatabase.getInstance().getReference("users");
-
         lvContacts = findViewById(R.id.lv_contacts);
-        contactNames = new ArrayList<>();
-        contactUIDs = new ArrayList<>();
+        fabAddContact = findViewById(R.id.fab_add_contact);
+        ivMenuMore = findViewById(R.id.iv_menu_more);
 
+        contactNames = new ArrayList<>();
         adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, contactNames);
         lvContacts.setAdapter(adapter);
 
-        // Charger la liste depuis Firebase
-        chargerContacts();
+        // Menu trois points
+        ivMenuMore.setOnClickListener(v -> afficherMenuOptions());
 
-        // Clic sur un contact pour ouvrir les MD (on créera ChatActivity juste après)
-        lvContacts.setOnItemClickListener((parent, view, position, id) -> {
-            String targetUid = contactUIDs.get(position);
-            String targetName = contactNames.get(position);
-            
-            // Intent temporaire ou direct vers le chat
-            Toast.makeText(this, "Ouverture de la discussion avec " + targetName, Toast.LENGTH_SHORT).show();
+        // Clic sur le bouton flottant pour ouvrir l'interface d'ajout
+        fabAddContact.setOnClickListener(v -> {
+            // On créera cette activité juste après pour la recherche/ajout
+            Toast.makeText(this, "Ouverture de l'ajout de contact", Toast.LENGTH_SHORT).show();
         });
     }
 
-    private void chargerContacts() {
-        usersRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot snapshot) {
-                contactNames.clear();
-                contactUIDs.clear();
-                for (DataSnapshot data : snapshot.getChildren()) {
-                    String uid = data.child("uid").getValue(String.class);
-                    String username = data.child("username").getValue(String.class);
+    private void afficherMenuOptions() {
+        PopupMenu popup = new PopupMenu(this, ivMenuMore);
+        popup.getMenu().add("Modifier les informations");
+        popup.getMenu().add("Créer un nouveau compte");
+        popup.getMenu().add("Se déconnecter");
 
-                    // On n'affiche pas notre propre compte dans notre liste
-                    if (uid != null && !uid.equals(currentUid)) {
-                        contactNames.add(username != null ? username : data.child("email").getValue(String.class));
-                        contactUIDs.add(uid);
-                    }
-                }
-                adapter.notifyDataSetChanged();
+        popup.setOnMenuItemClickListener(item -> {
+            String titre = item.getTitle().toString();
+            if (titre.equals("Se déconnecter")) {
+                mAuth.signOut();
+                retourConnexion();
+                return true;
+            } else if (titre.equals("Modifier les informations")) {
+                startActivity(new Intent(MainActivity.this, PseudoActivity.class));
+                return true;
+            } else if (titre.equals("Créer un nouveau compte")) {
+                mAuth.signOut();
+                startActivity(new Intent(MainActivity.this, RegisterActivity.class));
+                finish();
+                return true;
             }
-
-            @Override
-            public void onCancelled(DatabaseError error) {
-                Toast.makeText(MainActivity.this, "Erreur de chargement des contacts", Toast.LENGTH_SHORT).show();
-            }
+            return false;
         });
+        popup.show();
+    }
+
+    private void retourConnexion() {
+        startActivity(new Intent(MainActivity.this, LoginActivity.class));
+        finish();
     }
 }

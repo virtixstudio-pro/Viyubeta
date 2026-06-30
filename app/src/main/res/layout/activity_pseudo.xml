@@ -25,11 +25,9 @@
         android:layout_marginBottom="24dp"
         android:gravity="center"/>
 
-    <!-- Zone de Saisie avec statut à droite -->
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp">
+        android:layout_height="wrap_content">
 
         <EditText
             android:id="@+id/et_pseudo"
@@ -55,6 +53,19 @@
             android:textSize="18sp"/>
     </RelativeLayout>
 
+    <TextView
+        android:id="@+id/tv_pseudo_suggestion"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="24dp"
+        android:layout_gravity="start"
+        android:text="Suggestion : @chargement..."
+        android:textColor="#00FFCC"
+        android:textSize="13sp"
+        android:textStyle="italic"
+        android:visibility="gone"/>
+
     <Button
         android:id="@+id/btn_valider_pseudo"
         android:layout_width="match_parent"
@@ -63,7 +74,8 @@
         android:text="Valider"
         android:textColor="#0A0A0A"
         android:textStyle="bold"
-        android:textAllCaps="false"/>
+        android:textAllCaps="false"
+        android:layout_marginTop="16dp"/>
 
     <ProgressBar
         android:id="@+id/pb_pseudo_loading"

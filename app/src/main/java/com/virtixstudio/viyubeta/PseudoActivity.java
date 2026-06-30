@@ -1,7 +1,6 @@
 package com.virtixstudio.viyubeta;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -16,14 +15,16 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import java.util.HashMap;
+import java.util.Random;
 
 public class PseudoActivity extends AppCompatActivity {
 
     private EditText etPseudo;
-    private TextView tvStatus;
+    private TextView tvStatus, tvSuggestion;
     private Button btnValider;
     private ProgressBar progressBar;
     private boolean isPseudoValid = false;
+    private String suggestionGeneree = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,10 +33,28 @@ public class PseudoActivity extends AppCompatActivity {
 
         etPseudo = findViewById(R.id.et_pseudo);
         tvStatus = findViewById(R.id.tv_pseudo_status);
+        tvSuggestion = findViewById(R.id.tv_pseudo_suggestion);
         btnValider = findViewById(R.id.btn_valider_pseudo);
         progressBar = findViewById(R.id.pb_pseudo_loading);
 
-        // Écoute en temps réel des changements
+        // Génération automatique de la suggestion basée sur l'email
+        String email = FirebaseAuth.getInstance().getCurrentUser().getEmail();
+        if (email != null && email.contains("@")) {
+            String baseName = email.split("@")[0];
+            String[] suffixes = {"_vx", "_dev", "7", "_plus", "99", "_studio"};
+            String randomSuffix = suffixes[new Random().nextInt(suffixes.length)];
+            suggestionGeneree = "@" + baseName + randomSuffix;
+            
+            tvSuggestion.setText("Essayer plutôt : " + suggestionGeneree);
+            tvSuggestion.setVisibility(View.VISIBLE);
+        }
+
+        // Clic sur la suggestion pour l'injecter automatiquement
+        tvSuggestion.setOnClickListener(v -> {
+            etPseudo.setText(suggestionGeneree);
+            etPseudo.setSelection(suggestionGeneree.length()); // Place le curseur à la fin
+        });
+
         etPseudo.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -73,7 +92,7 @@ public class PseudoActivity extends AppCompatActivity {
             HashMap<String, Object> map = new HashMap<>();
             map.put("uid", uid);
             map.put("username", pseudo);
-            map.put("email", FirebaseAuth.getInstance().getCurrentUser().getEmail());
+            map.put("email", email);
 
             userRef.setValue(map).addOnCompleteListener(task -> {
                 progressBar.setVisibility(View.GONE);
@@ -82,8 +101,7 @@ public class PseudoActivity extends AppCompatActivity {
                     finish();
                 } else {
                     btnValider.setVisibility(View.VISIBLE);
-                    Toast.class.getSimpleName();
-                    Toast.makeText(PseudoActivity.this, "Erreur Firebase : " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(PseudoActivity.this, "Erreur : " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
                 }
             });
         });

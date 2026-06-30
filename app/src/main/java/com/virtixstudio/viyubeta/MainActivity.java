@@ -1,183 +1,86 @@
 package com.virtixstudio.viyubeta;
 
+import android.content.Intent;
 import android.os.Bundle;
-import android.provider.Settings;
-import android.text.TextUtils;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.TextView;
-import androidx.annotation.NonNull;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import com.google.firebase.FirebaseApp;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
-    private RecyclerView rvChats;
-    private EditText etMessage;
-    private Button btnSend;
-    private ChatAdapter adapter;
-    private List<ChatModel> chatList;
-    private DatabaseReference databaseReference;
-    private String myUniqueName; // Nom unique généré pour cet appareil
+    private ListView lvContacts;
+    private ArrayList<String> contactNames;
+    private ArrayList<String> contactUIDs;
+    private ArrayAdapter<String> adapter;
+    private DatabaseReference usersRef;
+    private String currentUid;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
-        // Génère un nom unique pour chaque téléphone (ex: User_a12b3c)
-        String androidId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
-        if (androidId != null && androidId.length() > 4) {
-            myUniqueName = "User_" + androidId.substring(0, 4);
-        } else {
-            myUniqueName = "User_Mobile";
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        if (auth.getCurrentUser() == null) {
+            startActivity(new Intent(this, LoginActivity.class));
+            finish();
+            return;
         }
 
-        rvChats = findViewById(R.id.rv_chats);
-        etMessage = findViewById(R.id.et_message);
-        btnSend = findViewById(R.id.btn_send);
+        currentUid = auth.getCurrentUser().getUid();
+        usersRef = FirebaseDatabase.getInstance().getReference("users");
 
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-        layoutManager.setStackFromEnd(true);
-        rvChats.setLayoutManager(layoutManager);
+        lvContacts = findViewById(R.id.lv_contacts);
+        contactNames = new ArrayList<>();
+        contactUIDs = new ArrayList<>();
 
-        chatList = new ArrayList<>();
-        adapter = new ChatAdapter(chatList, myUniqueName);
-        rvChats.setAdapter(adapter);
+        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, contactNames);
+        lvContacts.setAdapter(adapter);
 
-        databaseReference = FirebaseDatabase.getInstance("https://viyu-message-default-rtdb.europe-west1.firebasedatabase.app/").getReference("chats");
+        // Charger la liste depuis Firebase
+        chargerContacts();
 
-        btnSend.setOnClickListener(v -> {
-            String msgText = etMessage.getText().toString().trim();
-            if (!TextUtils.isEmpty(msgText)) {
-                String currentTime = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
-                ChatModel newMessage = new ChatModel(myUniqueName, msgText, currentTime);
-                databaseReference.push().setValue(newMessage);
-                etMessage.setText("");
-            }
+        // Clic sur un contact pour ouvrir les MD (on créera ChatActivity juste après)
+        lvContacts.setOnItemClickListener((parent, view, position, id) -> {
+            String targetUid = contactUIDs.get(position);
+            String targetName = contactNames.get(position);
+            
+            // Intent temporaire ou direct vers le chat
+            Toast.makeText(this, "Ouverture de la discussion avec " + targetName, Toast.LENGTH_SHORT).show();
         });
+    }
 
-        databaseReference.addValueEventListener(new ValueEventListener() {
+    private void chargerContacts() {
+        usersRef.addValueEventListener(new ValueEventListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                chatList.clear();
-                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                    ChatModel chat = dataSnapshot.getValue(ChatModel.class);
-                    if (chat != null) {
-                        chatList.add(chat);
+            public void onDataChange(DataSnapshot snapshot) {
+                contactNames.clear();
+                contactUIDs.clear();
+                for (DataSnapshot data : snapshot.getChildren()) {
+                    String uid = data.child("uid").getValue(String.class);
+                    String username = data.child("username").getValue(String.class);
+
+                    // On n'affiche pas notre propre compte dans notre liste
+                    if (uid != null && !uid.equals(currentUid)) {
+                        contactNames.add(username != null ? username : data.child("email").getValue(String.class));
+                        contactUIDs.add(uid);
                     }
                 }
                 adapter.notifyDataSetChanged();
-                if (chatList.size() > 0) {
-                    rvChats.scrollToPosition(chatList.size() - 1);
-                }
             }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError error) {}
+            public void onCancelled(DatabaseError error) {
+                Toast.makeText(MainActivity.this, "Erreur de chargement des contacts", Toast.LENGTH_SHORT).show();
+            }
         });
-    }
-
-    public static class ChatModel {
-        private String name;
-        private String message;
-        private String time;
-
-        public ChatModel() {}
-        public ChatModel(String name, String message, String time) {
-            this.name = name;
-            this.message = message;
-            this.time = time;
-        }
-
-        public String getName() { return name; }
-        public String getMessage() { return message; }
-        public String getTime() { return time; }
-    }
-
-    public static class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-        private final List<ChatModel> list;
-        private final String myName;
-        private static final int VIEW_TYPE_SENT = 1;
-        private static final int VIEW_TYPE_RECEIVED = 2;
-
-        public ChatAdapter(List<ChatModel> list, String myName) {
-            this.list = list;
-            this.myName = myName;
-        }
-
-        @Override
-        public int getItemViewType(int position) {
-            if (list.get(position).getName().equals(myName)) {
-                return VIEW_TYPE_SENT;
-            } else {
-                return VIEW_TYPE_RECEIVED;
-            }
-        }
-
-        @NonNull
-        @Override
-        public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            if (viewType == VIEW_TYPE_SENT) {
-                View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_chat_sent, parent, false);
-                return new SentViewHolder(view);
-            } else {
-                View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_chat_received, parent, false);
-                return new ReceivedViewHolder(view);
-            }
-        }
-
-        @Override
-        public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-            ChatModel item = list.get(position);
-            if (holder.getItemViewType() == VIEW_TYPE_SENT) {
-                ((SentViewHolder) holder).tvMsg.setText(item.getMessage());
-                ((SentViewHolder) holder).tvTime.setText(item.getTime());
-            } else {
-                ((ReceivedViewHolder) holder).tvName.setText(item.getName());
-                ((ReceivedViewHolder) holder).tvMsg.setText(item.getMessage());
-                ((ReceivedViewHolder) holder).tvTime.setText(item.getTime());
-            }
-        }
-
-        @Override
-        public int getItemCount() {
-            return list.size();
-        }
-
-        public static class SentViewHolder extends RecyclerView.ViewHolder {
-            TextView tvMsg, tvTime;
-            public SentViewHolder(@NonNull View itemView) {
-                super(itemView);
-                tvMsg = itemView.findViewById(R.id.tv_msg);
-                tvTime = itemView.findViewById(R.id.tv_time);
-            }
-        }
-
-        public static class ReceivedViewHolder extends RecyclerView.ViewHolder {
-            TextView tvName, tvMsg, tvTime;
-            public ReceivedViewHolder(@NonNull View itemView) {
-                super(itemView);
-                tvName = itemView.findViewById(R.id.tv_name);
-                tvMsg = itemView.findViewById(R.id.tv_msg);
-                tvTime = itemView.findViewById(R.id.tv_time);
-            }
-        }
     }
 }

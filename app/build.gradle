@@ -11,8 +11,8 @@ android {
         applicationId "com.virtixstudio.viyubeta"
         minSdk 24
         targetSdk 34
-        versionCode 18
-        versionName "1.0.3.8"
+        versionCode 25
+        versionName "1.0.4.5"
     }
 
     buildTypes {

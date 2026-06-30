@@ -3,14 +3,9 @@ package com.virtixstudio.viyubeta;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.View;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import com.google.firebase.auth.FirebaseAuth;
@@ -25,140 +20,101 @@ public class AddContactActivity extends AppCompatActivity {
 
     private EditText etSearch;
     private ListView lvSuggestions;
-    private LinearLayout llResultCard;
-    private TextView tvResUsername, tvResEmail;
-    private Button btnAdd;
-    
-    private DatabaseReference usersRef;
     private ArrayList<String> allUsernames;
-    private ArrayList<String> allEmails;
     private ArrayList<String> allUids;
-    private ArrayList<String> filteredSuggestions;
-    private ArrayAdapter<String> suggestionsAdapter;
-
-    private String selectedUid = null;
-    private String selectedName = null;
-    private String selectedEmail = null;
+    private ArrayList<String> filteredUsernames;
+    private ArrayList<String> filteredUids;
+    private ArrayAdapter<String> adapter;
+    private DatabaseReference usersRef;
+    private String currentUid;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_contact);
 
-        usersRef = FirebaseDatabase.getInstance().getReference("users");
-
-        etSearch = findViewById(R.id.et_search_query);
-        lvSuggestions = findViewById(R.id.lv_search_suggestions);
-        llResultCard = findViewById(R.id.ll_result_card);
-        tvResUsername = findViewById(R.id.tv_result_username);
-        tvResEmail = findViewById(R.id.tv_result_email);
-        btnAdd = findViewById(R.id.btn_add_confirm);
-        ImageView ivBack = findViewById(R.id.iv_back);
+        etSearch = findViewById(R.id.et_search_username);
+        lvSuggestions = findViewById(R.id.lv_suggestions);
 
         allUsernames = new ArrayList<>();
-        allEmails = new ArrayList<>();
         allUids = new ArrayList<>();
-        filteredSuggestions = new ArrayList<>();
+        filteredUsernames = new ArrayList<>();
+        filteredUids = new ArrayList<>();
 
-        suggestionsAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, filteredSuggestions);
-        lvSuggestions.setAdapter(suggestionsAdapter);
+        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, filteredUsernames);
+        lvSuggestions.setAdapter(adapter);
 
-        ivBack.setOnClickListener(v -> finish());
+        currentUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        // Sécurité : URL passée en dur explicitement ici aussi
+        usersRef = FirebaseDatabase.getInstance("https://viyu-message-default-rtdb.firebaseio.com").getReference("users");
 
-        telechargerBaseUtilisateurs();
+        telechargerUtilisateurs();
 
         etSearch.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            public void beforeTextChanged(CharSequence s, int start, int count, int打) {}
+
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                filtrerSuggestions(s.toString().trim());
+                filtrerResultats(s.toString());
             }
+
             @Override
             public void afterTextChanged(Editable s) {}
         });
 
         lvSuggestions.setOnItemClickListener((parent, view, position, id) -> {
-            String selection = filteredSuggestions.get(position);
-            for (int i = 0; i < allUsernames.size(); i++) {
-                if (allUsernames.get(i).equals(selection) || allEmails.get(i).equals(selection)) {
-                    selectedUid = allUids.get(i);
-                    selectedName = allUsernames.get(i);
-                    selectedEmail = allEmails.get(i);
-
-                    tvResUsername.setText(selectedName);
-                    tvResEmail.setText(selectedEmail);
-                    llResultCard.setVisibility(View.VISIBLE);
-                    lvSuggestions.setVisibility(View.GONE);
-                    break;
-                }
-            }
-        });
-
-        btnAdd.setOnClickListener(v -> {
-            if (selectedUid != null) {
-                String currentUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-                FirebaseDatabase.getInstance().getReference("users")
-                    .child(currentUid).child("contacts").child(selectedUid).setValue(selectedName)
-                    .addOnCompleteListener(task -> {
-                        if (task.isSuccessful()) {
-                            Toast.makeText(this, "Contact ajouté aux discussions !", Toast.LENGTH_SHORT).show();
-                            finish();
-                        }
-                    });
-            }
+            String targetUid = filteredUids.get(position);
+            String targetName = filteredUsernames.get(position);
+            ajouterContact(targetUid, targetName);
         });
     }
 
-    private void telechargerBaseUtilisateurs() {
-        usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
+    private void telechargerUtilisateurs() {
+        usersRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 allUsernames.clear();
-                allEmails.clear();
                 allUids.clear();
-                String currentUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-
                 for (DataSnapshot userSnapshot : snapshot.getChildren()) {
-                    String uid = userSnapshot.child("uid").getValue(String.class);
-                    if (uid != null && !uid.equals(currentUid)) {
+                    String uid = userSnapshot.getKey();
+                    String username = userSnapshot.child("username").getValue(String.class);
+                    if (username != null && uid != null && !uid.equals(currentUid)) {
+                        allUsernames.add(username);
                         allUids.add(uid);
-                        allUsernames.add(userSnapshot.child("username").getValue(String.class));
-                        allEmails.add(userSnapshot.child("email").getValue(String.class));
                     }
                 }
+                filtrerResultats(etSearch.getText().toString());
             }
+
             @Override
             public void onCancelled(DatabaseError error) {}
         });
     }
 
-    private void filtrerSuggestions(String query) {
-        filteredSuggestions.clear();
-        if (query.isEmpty()) {
-            lvSuggestions.setVisibility(View.GONE);
-            return;
-        }
-
-        String cleanQuery = query.startsWith("@") ? query : "@" + query;
-
-        for (int i = 0; i < allUsernames.size(); i++) {
-            String username = allUsernames.get(i);
-            String email = allEmails.get(i);
-
-            if ((username != null && username.toLowerCase().contains(cleanQuery.toLowerCase())) ||
-                (email != null && email.toLowerCase().contains(query.toLowerCase()))) {
-                if (username != null && !filteredSuggestions.contains(username)) {
-                    filteredSuggestions.add(username);
+    private void filtrerResultats(String query) {
+        filteredUsernames.clear();
+        filteredUids.clear();
+        if (!query.isEmpty()) {
+            for (int i = 0; i < allUsernames.size(); i++) {
+                if (allUsernames.get(i).toLowerCase().contains(query.toLowerCase())) {
+                    filteredUsernames.add(allUsernames.get(i));
+                    filteredUids.add(allUids.get(i));
                 }
             }
         }
+        adapter.notifyDataSetChanged();
+    }
 
-        if (!filteredSuggestions.isEmpty()) {
-            lvSuggestions.setVisibility(View.VISIBLE);
-            suggestionsAdapter.notifyDataSetChanged();
-        } else {
-            lvSuggestions.setVisibility(View.GONE);
-        }
+    private void ajouterContact(String targetUid, String targetName) {
+        DatabaseReference myContactsRef = usersRef.child(currentUid).child("contacts");
+        myContactsRef.child(targetUid).setValue(targetName).addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                Toast.makeText(AddContactActivity.this, targetName + " ajouté !", Toast.LENGTH_SHORT).show();
+                finish();
+            } else {
+                Toast.makeText(AddContactActivity.this, "Erreur d'ajout", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }

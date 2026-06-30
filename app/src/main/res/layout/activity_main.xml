@@ -25,8 +25,11 @@
                 android:layout_weight="1"
                 android:layout_height="45dp"
                 android:background="@drawable/bg_input_rounded"
-                android:hint="Rechercher un pseudo unique (@...)"
+                android:hint="Rechercher sur Viyu Message..."
                 android:paddingStart="15dp"
+                android:paddingEnd="15dp"
+                android:drawableStart="@drawable/ic_search"
+                android:drawablePadding="10dp"
                 android:textColor="#FFFFFF"
                 android:textColorHint="#555555"
                 android:inputType="text"/>
@@ -37,7 +40,8 @@
                 android:layout_height="40dp"
                 android:src="@drawable/ic_more_vert"
                 android:padding="8dp"
-                android:contentDescription="Menu"/>
+                android:contentDescription="Menu Options"
+                android:background="?attr/selectableItemBackgroundBorderless"/>
         </LinearLayout>
 
         <ListView
@@ -58,14 +62,14 @@
             android:layout_margin="16dp"
             android:src="@drawable/ic_add"
             app:backgroundTint="#FFFFFF"
-            android:contentDescription="Ajouter"/>
+            android:contentDescription="Ajouter contact"/>
     </RelativeLayout>
 
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/nav_view"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:layout_gravity="start"
+        android:layout_gravity="end"
         android:background="#121212"
         app:headerLayout="@layout/nav_header"
         app:menu="@menu/drawer_menu"

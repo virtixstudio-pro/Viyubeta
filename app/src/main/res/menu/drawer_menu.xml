@@ -1,0 +1,5 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/nav_profile" android:title="Mon Profil" />
+    <item android:id="@+id/nav_settings" android:title="Paramètres" />
+    <item android:id="@+id/nav_logout" android:title="Se déconnecter" />
+</menu>

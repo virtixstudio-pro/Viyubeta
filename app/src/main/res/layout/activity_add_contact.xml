@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#0A0A0A"
+    android:padding="16dp">
+
+    <!-- Header avec flèche retour -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="32dp">
+
+        <ImageView
+            android:id="@+id/iv_back"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@drawable/ic_arrow_back"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Retour"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@id/iv_back"
+            android:layout_centerInParent="true"
+            android:layout_marginStart="16dp"
+            android:text="Ajouter un contact"
+            android:textColor="#FFFFFF"
+            android:textSize="20sp"
+            android:textStyle="bold"/>
+    </RelativeLayout>
+
+    <!-- Zone de recherche avec indicateur d'état intégré -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp">
+
+        <EditText
+            android:id="@+id/et_search_query"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/bg_input_rounded"
+            android:hint="Entrez le pseudo ou l'email exact"
+            android:textColorHint="#888888"
+            android:textColor="#FFFFFF"
+            android:paddingStart="20dp"
+            android:paddingEnd="50dp"
+            android:inputType="text"/>
+
+        <ImageView
+            android:id="@+id/iv_status_indicator"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerInParent="true"
+            android:layout_marginEnd="16dp"
+            android:visibility="gone"/>
+    </RelativeLayout>
+
+    <Button
+        android:id="@+id/btn_add_confirm"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@drawable/bg_button_rounded"
+        android:text="Ajouter à mes discussions"
+        android:textColor="#0A0A0A"
+        android:textStyle="bold"
+        android:textAllCaps="false"
+        android:enabled="false"/>
+
+</LinearLayout>

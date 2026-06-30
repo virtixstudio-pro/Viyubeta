@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
         // Clic sur le bouton flottant pour ouvrir l'interface d'ajout
         fabAddContact.setOnClickListener(v -> {
             // On créera cette activité juste après pour la recherche/ajout
-            Toast.makeText(this, "Ouverture de l'ajout de contact", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(MainActivity.this, AddContactActivity.class));
         });
     }
 

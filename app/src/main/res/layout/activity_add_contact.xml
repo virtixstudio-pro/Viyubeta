@@ -6,7 +6,6 @@
     android:background="#0A0A0A"
     android:padding="16dp">
 
-    <!-- Header -->
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -20,32 +19,40 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:text="Nouveau contact"
+            android:text="Rechercher un contact"
             android:textColor="#FFFFFF"
             android:textSize="18sp"
             android:textStyle="bold"/>
     </RelativeLayout>
 
-    <!-- Recherche -->
     <EditText
         android:id="@+id/et_search_query"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:background="@drawable/bg_input_rounded"
-        android:hint="Saisir l'identifiant exact"
+        android:hint="Tape un pseudo ou un email..."
         android:textColorHint="#666666"
         android:textColor="#FFFFFF"
         android:paddingStart="16dp"
-        android:layout_marginBottom="24dp"
+        android:layout_marginBottom="12dp"
         android:inputType="text"/>
 
-    <!-- Carte de résultat stylée -->
+    <ListView
+        android:id="@+id/lv_search_suggestions"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:background="#121212"
+        android:divider="#222222"
+        android:dividerHeight="1dp"
+        android:visibility="gone"
+        android:layout_marginBottom="16dp"/>
+
     <LinearLayout
         android:id="@+id/ll_result_card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:background="#121212"
+        android:background="#161616"
         android:padding="16dp"
         android:visibility="gone">
 
@@ -73,7 +80,7 @@
             android:layout_width="match_parent"
             android:layout_height="45dp"
             android:background="@drawable/bg_button_rounded"
-            android:text="Ajouter"
+            android:text="Ajouter ce contact"
             android:textColor="#0A0A0A"
             android:textStyle="bold"
             android:textAllCaps="false"/>

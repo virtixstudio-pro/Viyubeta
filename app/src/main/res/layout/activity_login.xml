@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#1A1A1A"
+    android:gravity="center"
+    android:padding="24dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="VIYU"
+        android:textColor="#00E5FF"
+        android:textSize="42sp"
+        android:textStyle="bold"
+        android:shadowColor="#00E5FF"
+        android:shadowDx="0"
+        android:shadowDy="0"
+        android:shadowRadius="15"
+        android:layout_marginBottom="8dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Connecte-toi pour continuer"
+        android:textColor="#BBBBBB"
+        android:textSize="14sp"
+        android:layout_marginBottom="40dp" />
+
+    <EditText
+        android:id="@+id/et_login_email"
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:background="@drawable/bg_edittext_neon"
+        android:hint="Adresse Email"
+        android:textColorHint="#666666"
+        android:textColor="#FFFFFF"
+        android:inputType="textEmailAddress"
+        android:paddingHorizontal="16dp"
+        android:layout_marginBottom="16dp" />
+
+    <EditText
+        android:id="@+id/et_login_password"
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:background="@drawable/bg_edittext_neon"
+        android:hint="Mot de passe"
+        android:textColorHint="#666666"
+        android:textColor="#FFFFFF"
+        android:inputType="textPassword"
+        android:paddingHorizontal="16dp"
+        android:layout_marginBottom="24dp" />
+
+    <Button
+        android:id="@+id/btn_login_submit"
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:backgroundTint="#7B1FA2"
+        android:text="Se connecter"
+        android:textColor="#FFFFFF"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="12dp" />
+
+    <Button
+        android:id="@+id/btn_go_to_register"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:text="Pas encore de compte ? S'inscrire"
+        android:textColor="#00E5FF"
+        android:textSize="14sp" />
+
+</LinearLayout>

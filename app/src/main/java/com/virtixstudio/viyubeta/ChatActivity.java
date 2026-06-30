@@ -1,5 +1,6 @@
 package com.virtixstudio.viyubeta;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
@@ -46,7 +47,6 @@ public class ChatActivity extends AppCompatActivity {
         tvTitle = findViewById(R.id.tv_chat_title);
         if (targetName != null) tvTitle.setText(targetName);
 
-        // Création d'un ID unique pour la discussion (toujours le même ordre alphabétique)
         if (currentUid.compareTo(targetUid) < 0) {
             chatRoomId = currentUid + "_" + targetUid;
         } else {
@@ -80,12 +80,12 @@ public class ChatActivity extends AppCompatActivity {
 
                 if (msg.getSenderId().equals(currentUid)) {
                     container.setGravity(Gravity.END);
-                    bubble.setBackgroundResource(R.drawable.bg_button_rounded); // Couleur accent/blanc
-                    txt.setTextColor(#0A0A0A);
+                    bubble.setBackgroundResource(R.drawable.bg_button_rounded);
+                    txt.setTextColor(Color.parseColor("#0A0A0A"));
                 } else {
                     container.setGravity(Gravity.START);
-                    bubble.setBackgroundResource(R.drawable.bg_input_rounded); // Fond sombre gris
-                    txt.setTextColor(#FFFFFF);
+                    bubble.setBackgroundResource(R.drawable.bg_input_rounded);
+                    txt.setTextColor(Color.parseColor("#FFFFFF"));
                 }
                 return convertView;
             }

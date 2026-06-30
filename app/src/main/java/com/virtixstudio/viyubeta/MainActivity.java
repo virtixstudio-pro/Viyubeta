@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
         adapter = new ChatAdapter(chatList, MY_NAME);
         rvChats.setAdapter(adapter);
 
-        databaseReference = FirebaseDatabase.getInstance().getReference("chats");
+        databaseReference = FirebaseDatabase.getInstance("VRAIE_URL_DE_TA_BASE_ICI").getReference("chats");
         
         // Maintient la synchronisation des données en cache
         databaseReference.keepSynced(true);

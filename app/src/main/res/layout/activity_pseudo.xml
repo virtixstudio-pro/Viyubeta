@@ -5,24 +5,24 @@
     android:orientation="vertical"
     android:background="#0A0A0A"
     android:gravity="center"
-    android:padding="32dp">
+    android:padding="24dp">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Choisis ton pseudo"
+        android:text="Choisis ton pseudo unique"
         android:textColor="#FFFFFF"
-        android:textSize="24sp"
+        android:textSize="20sp"
         android:textStyle="bold"
         android:layout_marginBottom="8dp"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="C'est le nom que tes contacts verront."
+        android:text="Il doit obligatoirement commencer par @"
         android:textColor="#888888"
         android:textSize="14sp"
-        android:layout_marginBottom="32dp"
+        android:layout_marginBottom="24dp"
         android:gravity="center"/>
 
     <EditText
@@ -30,19 +30,20 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:background="@drawable/bg_input_rounded"
-        android:hint="Ex: Perse"
-        android:textColorHint="#888888"
+        android:hint="@pseudo"
+        android:textColorHint="#555555"
         android:textColor="#FFFFFF"
-        android:paddingHorizontal="20dp"
-        android:inputType="textPersonName"
-        android:layout_marginBottom="24dp"/>
+        android:paddingStart="16dp"
+        android:layout_marginBottom="16dp"
+        android:inputType="text"
+        android:text="@"/>
 
     <Button
-        android:id="@+id/btn_save_pseudo"
+        android:id="@+id/btn_valider_pseudo"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="45dp"
         android:background="@drawable/bg_button_rounded"
-        android:text="Continuer"
+        android:text="Valider"
         android:textColor="#0A0A0A"
         android:textStyle="bold"
         android:textAllCaps="false"/>

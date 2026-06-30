@@ -4,22 +4,38 @@
     android:layout_height="match_parent"
     android:background="#0A0A0A">
 
-    <!-- Header Chat -->
+    <!-- Header Chat Moderne -->
     <RelativeLayout
         android:id="@+id/rl_chat_header"
         android:layout_width="match_parent"
-        android:layout_height="60dp"
+        android:layout_height="65dp"
         android:background="#121212"
-        android:padding="12dp">
-        <TextView
-            android:id="@+id/tv_chat_title"
+        android:padding="8dp">
+        
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Discussion"
-            android:textColor="#FFFFFF"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:layout_centerInParent="true"/>
+            android:orientation="vertical"
+            android:layout_centerInParent="true"
+            android:gravity="center_horizontal">
+
+            <TextView
+                android:id="@+id/tv_chat_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Discussion"
+                android:textColor="#FFFFFF"
+                android:textSize="18sp"
+                android:textStyle="bold"/>
+
+            <TextView
+                android:id="@+id/tv_chat_status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="actif il y a un instant"
+                android:textColor="#888888"
+                android:textSize="12sp"/>
+        </LinearLayout>
     </RelativeLayout>
 
     <!-- Zone de Saisie en bas -->

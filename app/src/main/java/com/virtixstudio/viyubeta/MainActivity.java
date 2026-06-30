@@ -1,6 +1,7 @@
 package com.virtixstudio.viyubeta;
 
 import android.os.Bundle;
+import android.provider.Settings;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,15 +33,22 @@ public class MainActivity extends AppCompatActivity {
     private ChatAdapter adapter;
     private List<ChatModel> chatList;
     private DatabaseReference databaseReference;
-    private final String MY_NAME = "Moi";
+    private String myUniqueName; // Nom unique généré pour cet appareil
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Initialisation explicite de Firebase avec le contexte
         FirebaseApp.initializeApp(this);
+
+        // Génère un nom unique pour chaque téléphone (ex: User_a12b3c)
+        String androidId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+        if (androidId != null && androidId.length() > 4) {
+            myUniqueName = "User_" + androidId.substring(0, 4);
+        } else {
+            myUniqueName = "User_Mobile";
+        }
 
         rvChats = findViewById(R.id.rv_chats);
         etMessage = findViewById(R.id.et_message);
@@ -51,10 +59,9 @@ public class MainActivity extends AppCompatActivity {
         rvChats.setLayoutManager(layoutManager);
 
         chatList = new ArrayList<>();
-        adapter = new ChatAdapter(chatList, MY_NAME);
+        adapter = new ChatAdapter(chatList, myUniqueName);
         rvChats.setAdapter(adapter);
 
-        // Instance sécurisée avec l'URL Europe-West1
         databaseReference = FirebaseDatabase.getInstance("https://viyu-message-default-rtdb.europe-west1.firebasedatabase.app/").getReference("chats");
         databaseReference.keepSynced(true);
 
@@ -62,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
             String msgText = etMessage.getText().toString().trim();
             if (!TextUtils.isEmpty(msgText)) {
                 String currentTime = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
-                ChatModel newMessage = new ChatModel(MY_NAME, msgText, currentTime);
+                ChatModel newMessage = new ChatModel(myUniqueName, msgText, currentTime);
                 databaseReference.push().setValue(newMessage);
                 etMessage.setText("");
             }

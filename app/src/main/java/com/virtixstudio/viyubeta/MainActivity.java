@@ -40,7 +40,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        FirebaseApp.initializeApp(this);
 
         // Génère un nom unique pour chaque téléphone (ex: User_a12b3c)
         String androidId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
@@ -63,7 +62,6 @@ public class MainActivity extends AppCompatActivity {
         rvChats.setAdapter(adapter);
 
         databaseReference = FirebaseDatabase.getInstance("https://viyu-message-default-rtdb.europe-west1.firebasedatabase.app/").getReference("chats");
-        databaseReference.keepSynced(true);
 
         btnSend.setOnClickListener(v -> {
             String msgText = etMessage.getText().toString().trim();

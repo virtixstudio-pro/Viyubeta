@@ -12,27 +12,21 @@
         android:layout_height="match_parent"
         android:padding="16dp">
 
-        <LinearLayout
-            android:id="@+id/ll_header"
+        <RelativeLayout
+            android:id="@+id/rl_top_bar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
+            android:layout_marginBottom="16dp">
 
-            <EditText
-                android:id="@+id/et_global_search"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="45dp"
-                android:background="@drawable/bg_input_rounded"
-                android:hint="Rechercher sur Viyu Message..."
-                android:paddingStart="15dp"
-                android:paddingEnd="15dp"
-                android:drawableStart="@drawable/ic_search"
-                android:drawablePadding="10dp"
+            <TextView
+                android:id="@+id/tv_logo_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Viyu Message"
                 android:textColor="#FFFFFF"
-                android:textColorHint="#555555"
-                android:inputType="text"/>
+                android:textSize="26sp"
+                android:textStyle="bold"
+                android:layout_alignParentStart="true"/>
 
             <ImageView
                 android:id="@+id/iv_menu_more"
@@ -40,16 +34,32 @@
                 android:layout_height="40dp"
                 android:src="@drawable/ic_more_vert"
                 android:padding="8dp"
-                android:contentDescription="Menu Options"
+                android:layout_alignParentEnd="true"
+                android:layout_centerInParent="true"
                 android:background="?attr/selectableItemBackgroundBorderless"/>
-        </LinearLayout>
+        </RelativeLayout>
+
+        <EditText
+            android:id="@+id/et_global_search"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:layout_below="@id/rl_top_bar"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/bg_input_rounded"
+            android:hint="Rechercher sur Viyu..."
+            android:paddingStart="15dp"
+            android:paddingEnd="15dp"
+            android:drawableStart="@drawable/ic_search"
+            android:drawablePadding="10dp"
+            android:textColor="#FFFFFF"
+            android:textColorHint="#555555"
+            android:inputType="text"/>
 
         <ListView
             android:id="@+id/lv_contacts"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@id/ll_header"
-            android:layout_marginTop="16dp"
+            android:layout_below="@id/et_global_search"
             android:divider="#1A1A1A"
             android:dividerHeight="1dp"/>
 
@@ -62,7 +72,7 @@
             android:layout_margin="16dp"
             android:src="@drawable/ic_add"
             app:backgroundTint="#FFFFFF"
-            android:contentDescription="Ajouter contact"/>
+            android:contentDescription="Ajouter"/>
     </RelativeLayout>
 
     <com.google.android.material.navigation.NavigationView

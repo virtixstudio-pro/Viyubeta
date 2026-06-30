@@ -1,6 +1,5 @@
 package com.virtixstudio.viyubeta;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -8,6 +7,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import com.google.firebase.auth.FirebaseAuth;
@@ -20,11 +21,14 @@ import com.google.firebase.database.ValueEventListener;
 public class AddContactActivity extends AppCompatActivity {
 
     private EditText etSearch;
-    private ImageView ivStatus, ivBack;
+    private ImageView ivBack;
+    private LinearLayout llResultCard;
+    private TextView tvResUsername, tvResEmail;
     private Button btnAdd;
+    
     private DatabaseReference usersRef;
     private String foundUid = null;
-    private String foundUsername = null;
+    private String foundName = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,8 +38,10 @@ public class AddContactActivity extends AppCompatActivity {
         usersRef = FirebaseDatabase.getInstance().getReference("users");
 
         etSearch = findViewById(R.id.et_search_query);
-        ivStatus = findViewById(R.id.iv_status_indicator);
         ivBack = findViewById(R.id.iv_back);
+        llResultCard = findViewById(R.id.ll_result_card);
+        tvResUsername = findViewById(R.id.tv_result_username);
+        tvResEmail = findViewById(R.id.tv_result_email);
         btnAdd = findViewById(R.id.btn_add_confirm);
 
         ivBack.setOnClickListener(v -> finish());
@@ -45,37 +51,30 @@ public class AddContactActivity extends AppCompatActivity {
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                verifierUtilisateur(s.toString().trim());
+                rechercherAbonne(s.toString().trim());
             }
             @Override
             public void afterTextChanged(Editable s) {}
         });
 
         btnAdd.setOnClickListener(v -> {
-            if (foundUid != null && foundUsername != null) {
+            if (foundUid != null) {
                 String currentUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-                // Création d'un lien direct ou salon privé dans Firebase
-                DatabaseReference contactListRef = FirebaseDatabase.getInstance()
-                    .getReference("users")
-                    .child(currentUid)
-                    .child("contacts");
-
-                contactListRef.child(foundUid).setValue(foundUsername).addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        Toast.makeText(this, foundUsername + " ajouté à tes discussions !", Toast.LENGTH_SHORT).show();
-                        finish();
-                    } else {
-                        Toast.makeText(this, "Échec de l'ajout", Toast.LENGTH_SHORT).show();
-                    }
-                });
+                FirebaseDatabase.getInstance().getReference("users")
+                    .child(currentUid).child("contacts").child(foundUid).setValue(foundName)
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            Toast.makeText(this, "Contact synchronisé !", Toast.LENGTH_SHORT).show();
+                            finish();
+                        }
+                    });
             }
         });
     }
 
-    private void verifierUtilisateur(String query) {
+    private void rechercherAbonne(String query) {
         if (query.isEmpty()) {
-            ivStatus.setVisibility(View.GONE);
-            btnAdd.setEnabled(false);
+            llResultCard.setVisibility(View.GONE);
             return;
         }
 
@@ -91,21 +90,19 @@ public class AddContactActivity extends AppCompatActivity {
                         (email != null && email.equalsIgnoreCase(query))) {
                         trouve = true;
                         foundUid = userSnapshot.child("uid").getValue(String.class);
-                        foundUsername = username != null ? username : email;
+                        foundName = username != null ? username : email;
+                        
+                        tvResUsername.setText("@" + foundName);
+                        tvResEmail.setText(email != null ? email : "Aucun email fourni");
                         break;
                     }
                 }
 
                 if (trouve) {
-                    ivStatus.setImageResource(R.drawable.ic_check);
-                    ivStatus.setVisibility(View.VISIBLE);
-                    btnAdd.setEnabled(true);
+                    llResultCard.setVisibility(View.VISIBLE);
                 } else {
-                    ivStatus.setImageResource(R.drawable.ic_close);
-                    ivStatus.setVisibility(View.VISIBLE);
-                    btnAdd.setEnabled(false);
+                    llResultCard.setVisibility(View.GONE);
                     foundUid = null;
-                    foundUsername = null;
                 }
             }
 

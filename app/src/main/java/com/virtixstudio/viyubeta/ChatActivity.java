@@ -29,6 +29,7 @@ public class ChatActivity extends AppCompatActivity {
     private EditText etMessage;
     private Button btnSend;
     private TextView tvTitle;
+    private TextView tvStatus;
     
     private DatabaseReference chatRef;
     private String currentUid, targetUid, chatRoomId;
@@ -45,6 +46,7 @@ public class ChatActivity extends AppCompatActivity {
         String targetName = getIntent().getStringExtra("targetName");
 
         tvTitle = findViewById(R.id.tv_chat_title);
+        tvStatus = findViewById(R.id.tv_chat_status);
         if (targetName != null) tvTitle.setText(targetName);
 
         if (currentUid.compareTo(targetUid) < 0) {

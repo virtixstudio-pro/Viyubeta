@@ -44,7 +44,7 @@ public class LoginActivity extends AppCompatActivity {
 
         if (forceCreate) {
             mAuth.createUserWithEmailAndPassword(email, password)
-                .addOn Sharif -> prochainEcran()
+                .addOnSuccessListener(authResult -> prochainEcran())
                 .addOnFailureListener(e -> Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show());
         } else {
             mAuth.signInWithEmailAndPassword(email, password)

@@ -16,7 +16,7 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
 
-    - name: Build APK using system gradle
+    - name: Build APK
       run: gradle assembleDebug
 
     - name: Upload APK
